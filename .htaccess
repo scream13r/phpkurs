@@ -1,0 +1,6 @@
+# Включаем систему Rewrite
+RewriteEngine On
+# Пишем условия для редиректа любого запроса на файл index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule .* index.php [L]

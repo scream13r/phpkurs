@@ -1,3 +1,12 @@
+<?php
+ini_set('display_errors', 1);
+
+$routes = array(
+
+);
+require_once 'app/app.php';
+
+  /*
 <!doctype html>
 <html lang="ru-RU">
 <head>
@@ -113,3 +122,4 @@
 <script src="/js/main.js"></script>
 </body>
 </html>
+  */
