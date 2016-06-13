@@ -27,26 +27,71 @@ class Controller_Main extends Controller
 
     function action_download()
     {
-        $file ='./files/' . $this->param1;
-
-        if (file_exists($file)) {
-
-            if (ob_get_level()) {
-                ob_end_clean();
-            }
-            // заставляем браузер показать окно сохранения файла
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename=' . basename($file));
-            header('Content-Transfer-Encoding: binary');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize($file));
-            // читаем файл и отправляем его пользователю
-            readfile($file);
-            exit;
-        }
+        $this->model->param1 = $this->param1;
+        $this->model->download();
     }
 
+    function action_delete()
+    {
+        $this->model->param1 = $this->param1;
+        $this->model->delete();
+    }
+
+    function action_load()
+    {
+        $this->model->param1 = $this->param1;
+        $this->model->delete();
+    }
+
+    function action_upload()
+    {
+        $result_upload = $this->model->upload();
+
+        if (strlen($result_upload) > 1) {
+            $data = array('upload_status' => 1, 'upload_text' => 'Файл ' . $result_upload . ' успешно загружен');
+        } else {
+            $data = array('upload_status' => 0, 'upload_text' => 'Загрузка файла не удалась :( ');
+        }
+
+        $files = $this->model->get_data();
+        $data['arrFiles'] = $files;
+        $this->view->generate('main_view.php', $data);
+    }
+
+    function action_create()
+    {
+        $data = '';
+        $result_upload = $this->model->create();
+
+        if (count($_POST) > 0) {
+            if (strlen($result_upload) > 1) {
+                $data = array('upload_status' => 1, 'upload_text' => 'Файл ' . $result_upload . ' успешно создан');
+            } else {
+                $data = array('upload_status' => 0, 'upload_text' => 'Создание файла не удалась :( ');
+            }
+        }
+
+        $this->view->generate('main_create.php', $data);
+    }
+
+    function action_edit()
+    {
+        $this->model->param1 = $this->param1;
+        
+        if (count($_POST) > 0) {
+            $result = $this->model->edit();
+            if ($result == 1) {
+                $data['result_status'] = 1;
+                $data['result_text'] = 'Файл успешно изменен';
+            } else {
+                $data['result_status'] = 0;
+                $data['result_text'] = 'Изменение файла не удалась :( ';
+            }
+        }
+
+        $content = $this->model->get_data_one_file();
+        $data['title'] = 'Редактирование файла ';
+        $data['text'] = $content;
+        $this->view->generate('main_edit.php', $data);
+    }
 }
