@@ -51,12 +51,9 @@ class Model_Main extends Model {
 
     public function delete()
     {
-        $file ='./files/' . $this->param1;
-        if (file_exists($file)) {
 
-            unlink($file);
-        }
-        header('Location: /');
+         $this->db->query("INSERT INTO users (login) VALUES('john')");
+
     }
 
     public function upload()

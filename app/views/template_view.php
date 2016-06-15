@@ -21,8 +21,9 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="/">Список файлов</a></li>
-                <li><a href="/create/">Создать файл</a></li>
+                <li><a href="/">Главная</a></li>
+                <li><a href="/create/">Заполнить данными</a></li>
+                <li><a href="/delete/">Удалить всё</a></li>
             </ul>
         </div><!--/.navbar-collapse -->
     </div>

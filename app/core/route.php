@@ -11,11 +11,6 @@ class Route {
         // http://mvc/controller/action
         $routes = explode('/', $_SERVER['REQUEST_URI']);
 
-        // НЕ актуально для этого ДЗ: получаем контроллер
-        /*if (!empty($routes[1])){
-            $controller_name = $routes[1];
-        }       */
-
         // получаем действие
         if (!empty($routes[1])){
             $action_name = $routes[1];
