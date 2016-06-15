@@ -4,102 +4,97 @@ class Model_Main extends Model {
 
     public function get_data()
     {
-            $filelist = array();
-            if ($handle = opendir("./files")) {
-                while ($entry = readdir($handle)) {
-
-                     if( !in_array( $entry, array('.', '..') ) ) {
-                         $filelist[] = $entry;
-                     }
-
-                }
-                closedir($handle);
-            }
-
-            return $filelist;
+          $filelist = array();
+          $stmt = $this->db->query("SHOW TABLES");
+          while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $filelist[] = $row['Tables_in_phpkurs_dz4'].' '.$row['field2'];
+          }
+          return $filelist;
     }
 
-    public function get_data_one_file()
+
+   public function get_data_one()
     {
-            $content = file_get_contents('./files/'.$this->param1, true);
-            return $content;
-    }
 
-    public function download()
-    {
-        $file = './files/' . $this->param1;
+          $mainArray = array();
+          $stmtTable = $this->db->query("SELECT * FROM " . $this->param1 . " ");
 
-        if (file_exists($file)) {
+          $stmt = $this->db->query("SHOW FIELDS FROM " . $this->param1 . " ");
+          while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+              $mainArray['col'][] = $row['Field'];
+          }
 
-            if (ob_get_level()) {
-                ob_end_clean();
-            }
-            // заставляем браузер показать окно сохранения файла
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename=' . basename($file));
-            header('Content-Transfer-Encoding: binary');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize($file));
-            // читаем файл и отправляем его пользователю
-            readfile($file);
-            exit;
-        }
+
+          while($row2 = $stmtTable->fetch(PDO::FETCH_ASSOC)) {
+
+                    foreach ($mainArray['col'] as $elem => $nameCol) {
+                          $tempArray[$nameCol] = $row2[$nameCol];
+                    }
+                    $mainArray['value'][] =  $tempArray;
+           }
+
+          return $mainArray;
     }
 
     public function delete()
     {
+         $this->db->query("
+         TRUNCATE TABLE users;
+         TRUNCATE TABLE products;
+         TRUNCATE TABLE order_items;
+         TRUNCATE TABLE orders;
+         TRUNCATE TABLE category");
 
-         $this->db->query("INSERT INTO users (login) VALUES('john')");
-
-    }
-
-    public function upload()
-    {
-        $file_name =  strip_tags($_POST['file_name']);
-        if (strlen($file_name) == 0) return 0;
-
-        $new_file_name = "files/".basename($file_name) .  '.' . end(explode(".", $_FILES['file']['name']));
-        copy($_FILES['file']['tmp_name'], $new_file_name);
-
-        if (file_exists($new_file_name)) {
-            return $new_file_name;
-        } else {
-            return 0;
-        }
-
+        return 1;
     }
 
     public function create()
     {
-        $file_name =  strip_tags($_POST['file_name']);
-        $text =  strip_tags($_POST['text']);
-        if (strlen($file_name) == 0 || strlen($text) == 0) return 0;
 
-        $new_file_name = "files/".basename($file_name) .  '.txt';
-        $fp = fopen($new_file_name, "w");
-        fwrite($fp, $text);
-        fclose($fp);
+        for($i = 0; $i <= 9; $i++) {
+                $sth = $this->db->prepare("INSERT INTO users SET name=?, lastname=?, birthday=?, email=?,  password=?, is_active='1', reg_date=?, last_update=?, status='1' ");
+                $sth->execute( array(
+                    $this->faker->name,
+                    $this->faker->lastName,
+                    $this->faker->date,
+                    $this->faker->email,
+                    $this->faker->password(6),
+                    $this->faker->date,
+                    $this->faker->date
+                ));
 
-        if (file_exists($new_file_name)) {
-            return $new_file_name;
+                $sth = $this->db->prepare("INSERT INTO products SET id_catalog=?, title=?, mark=?, count=?, price=?, description=?, status='1' ");
+                $sth->execute( array(
+                    $this->faker->numberBetween($min = 1, $max = 10),
+                    $this->faker->jobTitle,
+                    $this->faker->word,
+                    $this->faker->numberBetween($min = 1, $max = 100),
+                    $this->faker->randomFloat(),
+                    $this->faker->realText
+                ));
+
+                $sth = $this->db->prepare("INSERT INTO category SET title=?, status='1' ");
+                $sth->execute( array(
+                    $this->faker->company
+                ));
+
+                $sth = $this->db->prepare("INSERT INTO orders SET id_user=?, date_order=?, status='1' ");
+                $sth->execute( array(
+                    $this->faker->numberBetween($min = 1, $max = 10),
+                    $this->faker->date
+                ));
+
+                $sth = $this->db->prepare("INSERT INTO order_items SET id_order=?,  id_product=?, price=?, count=? ");
+                $sth->execute( array(
+                    $this->faker->numberBetween($min = 1, $max = 10),
+                    $this->faker->numberBetween($min = 1, $max = 10),
+                    $this->faker->randomFloat(),
+                    $this->faker->numberBetween($min = 1, $max = 100)
+                ));
+
         }
 
+        return 1;
     }
 
-    public function edit()
-    {
-        $file ='./files/' . $this->param1;
-        $text =  strip_tags($_POST['text']);
-        if (strlen($text) == 0) return 0;
-
-        $fp = fopen($file, "w");
-        fwrite($fp, $text);
-        fclose($fp);
-
-         return 1;
-
-    }
 }

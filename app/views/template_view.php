@@ -17,7 +17,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Mikhail Bur | ДЗ - 3 | Учим MVC</a>
+            <a class="navbar-brand" href="/">Mikhail Bur | ДЗ - 4 | Учим MVC + БД</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">

@@ -8,8 +8,8 @@ class DB {
     {
 
            try {
-              $db = new PDO("mysql:host=localhost;dbname=phpkurs_dz4", 'root', '');
-              $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $this->db = new PDO("mysql:host=localhost;dbname=phpkurs_dz4", 'root', '');
+                $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             }
             catch(PDOException $e) {
                 echo $e->getMessage();
@@ -19,6 +19,14 @@ class DB {
     }
 
     public function query ($sql){
-            $this->db->query($sql);
+            return  $this->db->query($sql);
+    }
+
+    public function prepare ($sql){
+            return $this->db->prepare($sql);
+    }
+
+    public function execute($array){
+            return $this->db->execute($array);
     }
 }
